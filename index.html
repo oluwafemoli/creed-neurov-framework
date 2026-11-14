@@ -1,7 +1,167 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CREED Neurovascular Framework | Learn Beyond Boundaries</title><link rel="icon" href="assets/icon.png"><link rel="stylesheet" href="style.css"></head>
-<body><header><a href="#/" class="brand"><img src="assets/logo.png" alt="CREED Knowledge Intelligence Discovery - Learn Beyond Boundaries"></a>
-<button id="mb" aria-label="Menu">☰</button><nav id="nav"></nav></header>
-<main id="app"></main>
-<footer><img src="assets/icon.png" width="40" alt=""><p>© 2026 CREED Neurovascular Framework · Knowledge • Intelligence • Discovery</p></footer>
-<script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CREED Neurovascular Framework & Learning Academy</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="bg-glow-effect"></div>
+
+  <header>
+    <a href="index.html" class="logo-area">
+      <div class="logo-icon"><i class="fa-solid fa-brain"></i></div>
+      <span>CREED Neurov</span>
+    </a>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+
+        <!-- 1. Neuroscience & Research Dropdown -->
+        <li class="dropdown">
+          <a href="#">Neuroscience <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i></a>
+          <div class="dropdown-content">
+            <div class="dropdown-header">Core Disciplines</div>
+            <a href="dashboard.html?tab=lessons"><i class="fa-solid fa-brain"></i> Brain Anatomy</a>
+            <a href="dashboard.html?tab=lessons"><i class="fa-solid fa-dna"></i> Neurobiology</a>
+            <a href="dashboard.html?tab=lessons"><i class="fa-solid fa-lightbulb"></i> Cognitive Neuroscience</a>
+            <a href="dashboard.html?tab=lessons"><i class="fa-solid fa-network-wired"></i> Nervous System</a>
+            <div class="dropdown-header">Publications</div>
+            <a href="resources.html"><i class="fa-solid fa-book-medical"></i> Research Library</a>
+          </div>
+        </li>
+
+        <!-- 2. Examination Preparation Dropdown -->
+        <li class="dropdown">
+          <a href="#">Examinations <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i></a>
+          <div class="dropdown-content">
+            <div class="dropdown-header">Nigerian & West African</div>
+            <a href="dashboard.html?tab=quizzes&exam=JAMB"><i class="fa-solid fa-laptop-code"></i> JAMB UTME CBT</a>
+            <a href="dashboard.html?tab=quizzes&exam=WAEC"><i class="fa-solid fa-file-signature"></i> WAEC SSCE</a>
+            <a href="dashboard.html?tab=quizzes&exam=NECO"><i class="fa-solid fa-award"></i> NECO Examination</a>
+            <a href="dashboard.html?tab=quizzes&exam=GCE"><i class="fa-solid fa-graduation-cap"></i> GCE O/A Level</a>
+            <div class="dropdown-header">International & Syllabuses</div>
+            <a href="dashboard.html?tab=quizzes&exam=IELTS"><i class="fa-solid fa-globe"></i> IELTS English</a>
+            <a href="dashboard.html?tab=quizzes&exam=SAT"><i class="fa-solid fa-pen-ruler"></i> SAT & International</a>
+            <a href="dashboard.html?tab=syllabus"><i class="fa-solid fa-list-check"></i> Official Syllabuses</a>
+          </div>
+        </li>
+
+        <!-- 3. University & E-Learning Dropdown -->
+        <li class="dropdown">
+          <a href="#">Academy & Tools <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i></a>
+          <div class="dropdown-content">
+            <div class="dropdown-header">Learning Hub</div>
+            <a href="dashboard.html?tab=lessons"><i class="fa-solid fa-university"></i> University Portals & Courses</a>
+            <a href="dashboard.html?tab=tutors"><i class="fa-solid fa-chalkboard-user"></i> Online Tutors & Lecturers</a>
+            <a href="dashboard.html?tab=assignments"><i class="fa-solid fa-file-arrow-up"></i> Assignment Submission</a>
+            <div class="dropdown-header">Protected Study Tools</div>
+            <a href="dashboard.html?tab=ai"><i class="fa-solid fa-robot"></i> CREED AI Assistant & Flashcards</a>
+            <a href="dashboard.html?tab=calculator"><i class="fa-solid fa-calculator"></i> Scientific Calculator</a>
+            <a href="dashboard.html?tab=pomodoro"><i class="fa-solid fa-stopwatch"></i> Pomodoro Study Timer</a>
+          </div>
+        </li>
+
+        <li><a href="resources.html">Digital Library</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="faq.html">FAQs</a></li>
+      </ul>
+    </nav>
+    <div class="auth-btns">
+      <a href="login.html" class="btn btn-outline">Login</a>
+      <a href="login.html" class="btn btn-primary">Sign Up</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Welcome to Creed Neurovascular Framework</h1>
+      <p>Bridging advanced neuro-scientific education, AI learning tools, and comprehensive academic preparation (JAMB, WAEC, NECO, GCE, IELTS, SAT) for African scholars and global minds.</p>
+      
+      <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(0,242,254,0.08); border-left: 4px solid var(--accent-cyan); border-radius: 8px; font-size: 0.95rem;">
+        <p>Built by <a href="https://oluwafemoli.github.io/boge-neurovascular-Framework-inteligence/" target="_blank" style="color: var(--accent-cyan); text-decoration: underline; font-weight: 600;">Boge Expression by Babalola Oluwafemi Emmanuel</a>.</p>
+        <p style="margin-top: 4px; color: var(--text-muted);">High NFI built by <strong>Boge-neurovascular-Framework-inteligence</strong>.</p>
+      </div>
+
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="dashboard.html?tab=quizzes" class="btn btn-primary"><i class="fa-solid fa-laptop-code"></i> Start 120+ CBT Practice</a>
+        <a href="dashboard.html?tab=syllabus" class="btn btn-outline"><i class="fa-solid fa-list-check"></i> View Exam Syllabuses</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="hero-banner-card">
+        <i class="fa-solid fa-microchip" style="font-size: 3.8rem; color: var(--accent-cyan); margin-bottom: 1.2rem;"></i>
+        <h3 style="font-size: 1.7rem; margin-bottom: 0.8rem;">Neuro-AI Learning Ecosystem</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.2rem;">Featuring 120+ timed CBT questions across JAMB, WAEC, NECO, GCE, IELTS & SAT, complete Science/Arts/Commercial syllabuses, AI tutors, Scientific Calculator, and Pomodoro Timer.</p>
+        <a href="login.html" class="btn btn-primary" style="width:100%; justify-content:center;">Create Free Student / Tutor Account</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>Ecosystem Framework Stages</h2>
+      <p>From foundation diagnostics to advanced institutional intelligence</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3 style="color: var(--accent-cyan); margin-bottom: 0.8rem;">Stage 1 — Foundation</h3>
+        <p style="color: var(--text-muted);">Brand identity, website, user registration (Student & Tutor roles), business profiles, and basic assessments.</p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--accent-blue); margin-bottom: 0.8rem;">Stage 2 — Diagnostic Intelligence</h3>
+        <p style="color: var(--text-muted);">Business Stability Index, entrepreneur assessments, problem identification, and diagnostic reporting.</p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--accent-gold); margin-bottom: 0.8rem;">Stage 3 — AI Solutions</h3>
+        <p style="color: var(--text-muted);">Personalized action plans, root-cause analysis, solution recommendations, and progress tracking.</p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--accent-purple); margin-bottom: 0.8rem;">Stage 4 — Industry Intelligence</h3>
+        <p style="color: var(--text-muted);">Industry-specific assessments, business benchmarking, and professional expert networks.</p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--accent-cyan); margin-bottom: 0.8rem;">Stage 5 — Advanced Ecosystem</h3>
+        <p style="color: var(--text-muted);">Corporate dashboards, predictive risk monitoring, institutional partnerships, and international expansion.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>CREED Neurov</h3>
+        <p style="color: var(--text-muted); margin-top: 0.8rem;">Advancing neuroscience education and examination excellence.</p>
+        <p style="margin-top: 0.8rem; font-size: 0.9rem;">
+          Designed by <a href="https://oluwafemoli.github.io/boge-neurovascular-Framework-inteligence/" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">Boge Expression by Babalola Oluwafemi Emmanuel</a>
+        </p>
+      </div>
+      <div>
+        <h4>Examinations</h4>
+        <ul style="list-style: none; margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.4rem;">
+          <li><a href="dashboard.html?tab=quizzes&exam=JAMB" style="color: var(--text-muted); text-decoration: none;">JAMB UTME CBT</a></li>
+          <li><a href="dashboard.html?tab=quizzes&exam=WAEC" style="color: var(--text-muted); text-decoration: none;">WAEC SSCE</a></li>
+          <li><a href="dashboard.html?tab=quizzes&exam=NECO" style="color: var(--text-muted); text-decoration: none;">NECO & GCE</a></li>
+          <li><a href="dashboard.html?tab=quizzes&exam=IELTS" style="color: var(--text-muted); text-decoration: none;">IELTS & SAT</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Platform</h4>
+        <ul style="list-style: none; margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.4rem;">
+          <li><a href="about.html" style="color: var(--text-muted); text-decoration: none;">About</a></li>
+          <li><a href="resources.html" style="color: var(--text-muted); text-decoration: none;">Resources & Library</a></li>
+          <li><a href="pricing.html" style="color: var(--text-muted); text-decoration: none;">Pricing</a></li>
+          <li><a href="faq.html" style="color: var(--text-muted); text-decoration: none;">FAQs</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Creed Neurovascular Framework & Academy. Designed by <a href="https://oluwafemoli.github.io/boge-neurovascular-Framework-inteligence/" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">Boge Expression by Babalola Oluwafemi Emmanuel</a>. High NFI built by Boge-neurovascular-Framework-inteligence.</p>
+    </div>
+  </footer>
+</body>
+</html>

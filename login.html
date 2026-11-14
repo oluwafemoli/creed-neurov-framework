@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login / Sign Up - CREED Neurov</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="bg-glow-effect"></div>
+  <header>
+    <a href="index.html" class="logo-area">
+      <div class="logo-icon"><i class="fa-solid fa-brain"></i></div>
+      <span>CREED Neurov</span>
+    </a>
+  </header>
+  <section style="padding-top: 120px; display: flex; justify-content: center; align-items: center; min-height: 85vh;">
+    <div class="card" style="width: 100%; max-width: 480px;">
+      <h2 style="text-align: center; margin-bottom: 0.5rem;">Access CREED Dashboard</h2>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 1.8rem;">Designed by Boge Expression by Babalola Oluwafemi Emmanuel</p>
+      <form onsubmit="event.preventDefault(); handleAuth();">
+        <div style="margin-bottom: 1.1rem;">
+          <label style="display: block; margin-bottom: 0.4rem; color: var(--text-muted);">Email Address</label>
+          <input type="email" id="emailInput" required placeholder="student@example.com" style="width: 100%; padding: 0.8rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; color: #fff;">
+        </div>
+        <div style="margin-bottom: 1.1rem;">
+          <label style="display: block; margin-bottom: 0.4rem; color: var(--text-muted);">Password</label>
+          <input type="password" id="passInput" required placeholder="••••••••" style="width: 100%; padding: 0.8rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; color: #fff;">
+        </div>
+        <div style="margin-bottom: 1.8rem;">
+          <label style="display: block; margin-bottom: 0.4rem; color: var(--text-muted);">Select Role</label>
+          <select id="roleInput" style="width: 100%; padding: 0.8rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; color: #fff;">
+            <option value="student">Student (Free Tier: 2 Tutors max)</option>
+            <option value="tutor">Online Tutor</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In / Register & Access Dashboard</button>
+      </form>
+    </div>
+  </section>
+  <script>
+    function handleAuth() {
+      const email = document.getElementById('emailInput').value;
+      const role = document.getElementById('roleInput').value;
+      localStorage.setItem('creed_auth', 'true');
+      localStorage.setItem('creed_user_email', email);
+      localStorage.setItem('creed_user_role', role);
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard - CREED Neurov</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      min-height: 100vh;
+      padding-top: 72px;
+    }
+    .sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      padding: 1.8rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.78rem 1rem;
+      border-radius: 10px;
+      transition: var(--transition);
+      font-weight: 500;
+      font-size: 0.92rem;
+      cursor: pointer;
+    }
+    .sidebar-link:hover, .sidebar-link.active {
+      background: rgba(0,242,254,0.14);
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+    .main-content {
+      padding: 2.2rem 4%;
+      overflow-y: auto;
+    }
+    .dash-section {
+      display: none;
+    }
+    .dash-section.active {
+      display: block;
+    }
+    /* CBT Quiz Styles */
+    .cbt-header-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-secondary);
+      padding: 1.2rem 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+    .timer-badge {
+      background: rgba(255, 42, 133, 0.16);
+      border: 1px solid var(--accent-pink);
+      color: #ff6b9d;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cbt-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-secondary);
+      padding: 1rem 1.2rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .cbt-option:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 242, 254, 0.08);
+    }
+    /* Syllabus Tabs */
+    .stream-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 1.8rem;
+    }
+    .stream-btn {
+      padding: 0.65rem 1.3rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .stream-btn.active, .stream-btn:hover {
+      background: rgba(0, 242, 254, 0.18);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+    .syllabus-panel {
+      display: none;
+    }
+    .syllabus-panel.active {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    /* Calculator & Timer */
+    .calc-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .calc-screen {
+      width: 100%;
+      height: 60px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1.8rem;
+      text-align: right;
+      padding: 0 1rem;
+      color: var(--accent-cyan);
+      margin-bottom: 1.5rem;
+    }
+    .calc-keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .calc-btn {
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .calc-btn:hover { background: rgba(0,242,254,0.25); }
+    .timer-box {
+      text-align: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 3rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .timer-display {
+      font-size: 4rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      margin: 1.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow-effect"></div>
+
+  <header>
+    <a href="index.html" class="logo-area">
+      <div class="logo-icon"><i class="fa-solid fa-brain"></i></div>
+      <span>CREED Dashboard</span>
+    </a>
+    <div class="auth-btns">
+      <span id="userEmailDisplay" style="color: var(--accent-cyan); font-size: 0.88rem; margin-right: 12px;"></span>
+      <a href="index.html" class="btn btn-outline" style="padding: 0.45rem 0.9rem;">Home</a>
+      <button onclick="logout()" class="btn btn-outline" style="padding: 0.45rem 0.9rem;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-link active" id="nav-overview" onclick="switchTab('overview', this)"><i class="fa-solid fa-house"></i> Overview</div>
+      <div class="sidebar-link" id="nav-quizzes" onclick="switchTab('quizzes', this)"><i class="fa-solid fa-laptop-code"></i> 120+ Timed CBT Quizzes</div>
+      <div class="sidebar-link" id="nav-syllabus" onclick="switchTab('syllabus', this)"><i class="fa-solid fa-list-check"></i> Official Exam Syllabuses</div>
+      <div class="sidebar-link" id="nav-lessons" onclick="switchTab('lessons', this)"><i class="fa-solid fa-book-open"></i> Learning Modules</div>
+      <div class="sidebar-link" id="nav-ai" onclick="switchTab('ai', this)"><i class="fa-solid fa-robot"></i> CREED AI Tutor & Flashcards</div>
+      <div class="sidebar-link" id="nav-assignments" onclick="switchTab('assignments', this)"><i class="fa-solid fa-file-arrow-up"></i> Assignment Submission</div>
+      <div class="sidebar-link" id="nav-tutors" onclick="switchTab('tutors', this)"><i class="fa-solid fa-chalkboard-user"></i> Connect Online Tutors</div>
+      <div class="sidebar-link" id="nav-calculator" onclick="switchTab('calculator', this)"><i class="fa-solid fa-calculator"></i> Scientific Calculator</div>
+      <div class="sidebar-link" id="nav-pomodoro" onclick="switchTab('pomodoro', this)"><i class="fa-solid fa-stopwatch"></i> Pomodoro Study Timer</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      
+      <!-- 1. Overview -->
+      <div id="overview" class="dash-section active">
+        <h2 style="font-size: 2.1rem; margin-bottom: 0.4rem;">Welcome to Your User Command Center</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Designed by Boge Expression by Babalola Oluwafemi Emmanuel. High NFI built by Boge-neurovascular-Framework-inteligence.</p>
+        
+        <div class="grid-3" style="margin-bottom: 2rem;">
+          <div class="card">
+            <h3 style="color: var(--accent-cyan); font-size: 2rem; margin-bottom: 0.4rem;">120 Questions</h3>
+            <p style="color: var(--text-muted);">Timed CBT Bank: JAMB, WAEC, NECO, GCE, IELTS & SAT</p>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--accent-blue); font-size: 2rem; margin-bottom: 0.4rem;">All Streams</h3>
+            <p style="color: var(--text-muted);">Complete Science, Arts & Commercial Syllabuses</p>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--accent-gold); font-size: 2rem; margin-bottom: 0.4rem;">2 Tutors</h3>
+            <p style="color: var(--text-muted);">Free Tier Connection Limit (Upgrade for Unlimited)</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-bottom: 0.8rem;">Quick Launch</h3>
+          <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+            <button class="btn btn-primary" onclick="switchTab('quizzes', document.getElementById('nav-quizzes'))"><i class="fa-solid fa-play"></i> Launch Timed CBT Practice</button>
+            <button class="btn btn-outline" onclick="switchTab('syllabus', document.getElementById('nav-syllabus'))"><i class="fa-solid fa-book"></i> Browse JAMB/WAEC/NECO Syllabuses</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 120+ Timed CBT Quizzes (JAMB, WAEC, NECO, GCE, IELTS, SAT, Neuroscience) -->
+      <div id="quizzes" class="dash-section">
+        <div class="section-title" style="margin-bottom: 1.2rem; text-align:left;">
+          <h2>Timed CBT Examination Practice Center (120 Questions)</h2>
+          <p>Filter by Examination Board & Subject • Per-Question Countdown Timer • Instant Explanations</p>
+        </div>
+
+        <!-- Exam & Subject Filter Bar -->
+        <div class="cbt-header-bar">
+          <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+            <div>
+              <label style="font-size:0.8rem; color:var(--text-muted); display:block;">Examination Board</label>
+              <select id="examFilter" onchange="filterQuestions()" style="padding:0.55rem 0.9rem; background:var(--bg-primary); color:#fff; border:1px solid var(--border-color); border-radius:8px;">
+                <option value="ALL">All Examinations (120 Qs)</option>
+                <option value="JAMB">JAMB UTME (20 Qs)</option>
+                <option value="WAEC">WAEC SSCE (20 Qs)</option>
+                <option value="NECO">NECO Examination (20 Qs)</option>
+                <option value="GCE">GCE O/A Level (20 Qs)</option>
+                <option value="IELTS">IELTS Academic (20 Qs)</option>
+                <option value="SAT">SAT International (20 Qs)</option>
+                <option value="NEUROSCIENCE">Neuroscience & STEM (20 Qs)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.8rem; color:var(--text-muted); display:block;">Subject</label>
+              <select id="subjectFilter" onchange="applySubjectFilter()" style="padding:0.55rem 0.9rem; background:var(--bg-primary); color:#fff; border:1px solid var(--border-color); border-radius:8px;">
+                <option value="ALL">All Subjects</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.8rem; color:var(--text-muted); display:block;">Time per Question</label>
+              <select id="timePerQSelect" onchange="resetQuestionTimer()" style="padding:0.55rem 0.9rem; background:var(--bg-primary); color:#fff; border:1px solid var(--border-color); border-radius:8px;">
+                <option value="45">45 Seconds (Standard JAMB)</option>
+                <option value="60" selected>60 Seconds (1 Minute)</option>
+                <option value="90">90 Seconds (Analytical)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:15px;">
+            <div style="text-align:right;">
+              <div style="font-size:0.8rem; color:var(--text-muted);">Score</div>
+              <div id="cbtScoreDisplay" style="font-weight:800; color:var(--accent-cyan); font-size:1.1rem;">0 / 0</div>
+            </div>
+            <div class="timer-badge">
+              <i class="fa-solid fa-clock"></i> <span id="qTimerDisplay">01:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="card" style="max-width: 900px; margin: 0 auto;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <span id="qBadge" style="background:rgba(0,242,254,0.15); color:var(--accent-cyan); padding:4px 12px; border-radius:6px; font-size:0.82rem; font-weight:700;">JAMB • Use of English</span>
+            <span id="qCounter" style="color:var(--text-muted); font-size:0.9rem; font-weight:600;">Question 1 of 120</span>
+          </div>
+
+          <h3 id="cbtQuestionText" style="font-size:1.25rem; margin-bottom:1.5rem; line-height:1.5;">Loading question...</h3>
+
+          <div id="cbtOptionsContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:1.5rem;"></div>
+
+          <div id="cbtFeedbackBox" style="display:none; padding:1rem 1.2rem; border-radius:10px; margin-bottom:1.5rem; font-size:0.95rem;"></div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <button class="btn btn-outline" onclick="prevQuestion()"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-primary" id="submitCbtBtn" onclick="checkCbtAnswer()">Submit Answer</button>
+              <button class="btn btn-outline" onclick="nextQuestion()">Next Question <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Official Syllabuses (JAMB, WAEC, NECO across Science, Arts, Commercial) -->
+      <div id="syllabus" class="dash-section">
+        <div class="section-title" style="margin-bottom: 1.5rem; text-align:left;">
+          <h2>Official Examination Syllabuses (JAMB, WAEC, NECO & GCE)</h2>
+          <p>Structured curriculum topics and required subject combinations across Science, Arts, Commercial, and International tracks</p>
+        </div>
+
+        <div class="stream-tabs">
+          <button class="stream-btn active" onclick="switchStream('science', this)"><i class="fa-solid fa-atom"></i> Science Stream</button>
+          <button class="stream-btn" onclick="switchStream('arts', this)"><i class="fa-solid fa-landmark"></i> Arts & Humanities</button>
+          <button class="stream-btn" onclick="switchStream('commercial', this)"><i class="fa-solid fa-chart-line"></i> Commercial & Management</button>
+          <button class="stream-btn" onclick="switchStream('international', this)"><i class="fa-solid fa-globe"></i> IELTS, SAT & Neuroscience</button>
+        </div>
+
+        <!-- Science Stream -->
+        <div id="stream-science" class="syllabus-panel active">
+          <div class="card">
+            <span style="color:var(--accent-cyan); font-size:0.8rem; font-weight:700;">JAMB / WAEC / NECO</span>
+            <h3 style="margin:0.5rem 0;">Physics Syllabus</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Measurements, Scalars & Vectors, Kinematics & Dynamics</li>
+              <li>Work, Energy, Power, Elasticity & Hydrostatics</li>
+              <li>Thermal Physics, Gas Laws & Thermodynamics</li>
+              <li>Waves, Sound, Geometrical & Physical Optics</li>
+              <li>Electrostatics, Current Electricity, Electromagnetism & Modern Physics</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span style="color:var(--accent-blue); font-size:0.8rem; font-weight:700;">JAMB / WAEC / NECO</span>
+            <h3 style="margin:0.5rem 0;">Chemistry Syllabus</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Atomic Structure, Periodic Table & Chemical Bonding</li>
+              <li>Stoichiometry, Gas Laws & States of Matter</li>
+              <li>Acids, Bases, Salts, Volumetric Analysis & Electrochemistry</li>
+              <li>Chemical Kinetics, Equilibrium & Energetics</li>
+              <li>Organic Chemistry (Alkanes, Alkenes, Alkynes, Alkanols, Esters)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span style="color:var(--accent-gold); font-size:0.8rem; font-weight:700;">JAMB / WAEC / NECO</span>
+            <h3 style="margin:0.5rem 0;">Biology & Mathematics</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Cell Structure, Organization, Nutrition & Respiration</li>
+              <li>Transport Systems, Excretion, Homeostasis & Nervous Coordination</li>
+              <li>Genetics, Evolution & Ecology</li>
+              <li>Algebra, Trigonometry, Coordinate Geometry, Calculus & Statistics</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Arts Stream -->
+        <div id="stream-arts" class="syllabus-panel">
+          <div class="card">
+            <span style="color:var(--accent-cyan); font-size:0.8rem; font-weight:700;">JAMB / WAEC / NECO</span>
+            <h3 style="margin:0.5rem 0;">Literature-in-English</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Literary Appreciation, Figures of Speech & Poetic Devices</li>
+              <li>African & Non-African Prose (Prescribed Texts)</li>
+              <li>African & Non-African Drama & Tragedy/Comedy Structure</li>
+              <li>Selected African & Non-African Poetry Anthologies</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span style="color:var(--accent-blue); font-size:0.8rem; font-weight:700;">JAMB / WAEC / NECO</span>
+            <h3 style="margin:0.5rem 0;">Government & History</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Basic Concepts of Power, Authority, Sovereignty & Democracy</li>
+              <li>Pre-Colonial, Colonial & Post-Independence Nigerian Constitutions</li>
+              <li>Arms of Government, Federalism, Electoral Systems & Public Admin</li>
+              <li>ECOWAS, African Union (AU), Commonwealth & United Nations</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span style="color:var(--accent-gold); font-size:0.8rem; font-weight:700;">JAMB / WAEC / NECO</span>
+            <h3 style="margin:0.5rem 0;">CRK / IRS & Use of English</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Comprehension, Summary Writing & Lexis and Structure</li>
+              <li>Oral English (Vowels, Consonants, Stress & Intonation)</li>
+              <li>Scriptural Themes, Leadership & Moral Ethics</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Commercial Stream -->
+        <div id="stream-commercial" class="syllabus-panel">
+          <div class="card">
+            <span style="color:var(--accent-cyan); font-size:0.8rem; font-weight:700;">JAMB / WAEC / NECO</span>
+            <h3 style="margin:0.5rem 0;">Economics Syllabus</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Basic Economic Problems, Opportunity Cost & Production Possibility</li>
+              <li>Demand, Supply, Elasticity & Price Determination</li>
+              <li>Market Structures, National Income, Money & Banking</li>
+              <li>Public Finance, Inflation, International Trade & Economic Growth</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span style="color:var(--accent-blue); font-size:0.8rem; font-weight:700;">JAMB / WAEC / NECO</span>
+            <h3 style="margin:0.5rem 0;">Financial Accounting</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Double Entry Principle, Books of Original Entry & Trial Balance</li>
+              <li>Bank Reconciliation Statements & Control Accounts</li>
+              <li>Final Accounts of Sole Proprietors, Partnerships & Companies</li>
+              <li>Depreciation, Public Sector Accounting & Ratio Analysis</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span style="color:var(--accent-gold); font-size:0.8rem; font-weight:700;">JAMB / WAEC / NECO</span>
+            <h3 style="margin:0.5rem 0;">Commerce & Business Studies</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Home & Foreign Trade, Aids to Trade (Banking, Insurance, Transport)</li>
+              <li>Business Organizations, Stock Exchange & Consumer Protection</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- International & Neuroscience -->
+        <div id="stream-international" class="syllabus-panel">
+          <div class="card">
+            <span style="color:var(--accent-cyan); font-size:0.8rem; font-weight:700;">INTERNATIONAL</span>
+            <h3 style="margin:0.5rem 0;">IELTS Academic & General</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Listening: Academic Lectures & Everyday Conversations</li>
+              <li>Reading: True/False/Not Given, Matching Headings & Summary Completion</li>
+              <li>Writing Task 1 (Data/Graphs) & Task 2 (Discursive Essays)</li>
+              <li>Speaking: Cue Card Fluency & Lexical Resource</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span style="color:var(--accent-blue); font-size:0.8rem; font-weight:700;">INTERNATIONAL</span>
+            <h3 style="margin:0.5rem 0;">Digital SAT Syllabus</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Reading & Writing: Craft and Structure, Information & Ideas</li>
+              <li>Standard English Conventions & Expression of Ideas</li>
+              <li>Math: Algebra, Advanced Math, Problem-Solving & Data Analysis</li>
+              <li>Geometry & Trigonometry</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span style="color:var(--accent-gold); font-size:0.8rem; font-weight:700;">CREED CORE</span>
+            <h3 style="margin:0.5rem 0;">Neurovascular & Cognitive Science</h3>
+            <ul style="color:var(--text-muted); font-size:0.9rem; padding-left:1.2rem; line-height:1.8;">
+              <li>Cerebral Hemodynamics, Circle of Willis & Blood-Brain Barrier</li>
+              <li>Neurovascular Coupling, Pericytes & Astrocyte Signaling</li>
+              <li>Synaptic Plasticity, Memory Consolidation & AI Modeling</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Learning Modules -->
+      <div id="lessons" class="dash-section">
+        <div class="section-title" style="margin-bottom: 1.5rem; text-align:left;">
+          <h2>Organized Learning Modules</h2>
+          <p>Structured topics, notes, and study materials for Neuroscience & Examination Prep</p>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <span style="background: rgba(0,242,254,0.15); color: var(--accent-cyan); padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">Module 1</span>
+            <h3 style="margin: 1rem 0 0.5rem;">Cerebral Blood Flow & Neurovascular Coupling</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">Detailed notes on neuronal metabolic demand, astrocytes, and capillary autoregulation.</p>
+            <button class="btn btn-outline" onclick="switchTab('quizzes', document.getElementById('nav-quizzes'))">Practice Module CBT</button>
+          </div>
+          <div class="card">
+            <span style="background: rgba(79,172,254,0.15); color: var(--accent-blue); padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">Module 2</span>
+            <h3 style="margin: 1rem 0 0.5rem;">JAMB Use of English & Literature Masterclass</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">Comprehensive grammar rules, lexical items, and poetry comprehension strategies.</p>
+            <button class="btn btn-outline" onclick="switchTab('quizzes', document.getElementById('nav-quizzes'))">Practice Module CBT</button>
+          </div>
+          <div class="card">
+            <span style="background: rgba(255,215,0,0.15); color: var(--accent-gold); padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">Module 3</span>
+            <h3 style="margin: 1rem 0 0.5rem;">STEM Advanced Physics & Chemistry</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">Electromagnetism, thermodynamics, organic chemistry reaction mechanisms, and calculus.</p>
+            <button class="btn btn-outline" onclick="switchTab('quizzes', document.getElementById('nav-quizzes'))">Practice Module CBT</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. AI Tutor & Flashcards -->
+      <div id="ai" class="dash-section">
+        <div class="section-title" style="margin-bottom: 1.5rem; text-align:left;">
+          <h2>CREED AI Tutor & Flashcard Generator</h2>
+          <p>Ask questions, generate flashcards, and revise topics instantly</p>
+        </div>
+        <div class="grid-3">
+          <div class="card" style="grid-column: span 2; display: flex; flex-direction: column;">
+            <h3 style="margin-bottom: 1rem;">CREED AI Learning Assistant</h3>
+            <div id="chatBox" style="flex: 1; background: var(--bg-secondary); padding: 1rem; border-radius: 12px; min-height: 240px; max-height: 320px; overflow-y: auto; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 10px;">
+              <div style="background: rgba(0,242,254,0.1); padding: 0.8rem; border-radius: 8px; max-width: 85%;"><strong>CREED AI:</strong> Hello! Designed by Boge Expression by Babalola Oluwafemi Emmanuel. Ask me about any JAMB, WAEC, NECO, GCE, IELTS, SAT, or Neuroscience topic!</div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="aiInput" placeholder="Ask AI anything..." style="flex: 1; padding: 0.8rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; color: #fff;">
+              <button class="btn btn-primary" onclick="sendAiMessage()">Ask AI</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Flashcards & Revision</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.8rem 0;">Click card to flip definition.</p>
+            <div id="flashcard" style="background: var(--bg-secondary); padding: 2rem; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); margin-bottom: 1rem; cursor: pointer;" onclick="flipCard()">
+              <h4 id="fcFront" style="color: var(--accent-cyan);">What is Neurovascular Coupling?</h4>
+            </div>
+            <button class="btn btn-outline" style="width: 100%; justify-content: center;" onclick="nextCard()">Next Flashcard</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Assignment Submission -->
+      <div id="assignments" class="dash-section">
+        <div class="section-title" style="margin-bottom: 1.5rem; text-align:left;">
+          <h2>Assignment Submission Portal</h2>
+          <p>Upload your completed coursework and essays for tutor grading and feedback</p>
+        </div>
+        <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
+          <i class="fa-solid fa-cloud-arrow-up" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 1rem;"></i>
+          <h3 style="margin-bottom: 0.5rem;">Submit Assignment File</h3>
+          <p style="color: var(--text-muted); margin-bottom: 1.5rem;">PDF, DOCX, or ZIP files accepted.</p>
+          <input type="file" id="assignmentFile" style="margin-bottom: 1.5rem; color: var(--text-muted);">
+          <br>
+          <button class="btn btn-primary" onclick="alert('Assignment submitted successfully for tutor evaluation!')">Upload & Submit</button>
+        </div>
+      </div>
+
+      <!-- 7. Connect Tutors -->
+      <div id="tutors" class="dash-section">
+        <div class="section-title" style="margin-bottom: 1.5rem; text-align:left;">
+          <h2>Connect with Online Tutors & AI Agents</h2>
+          <p>Free Tier: Connected to 2 / 2 Tutors. Upgrade for unlimited connections.</p>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Dr. Babalola Oluwafemi Emmanuel</h3>
+            <p style="color: var(--accent-cyan); margin: 0.5rem 0;">STEM & CBT Lead</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Expert in neurovascular learning dynamics and examination excellence.</p>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="alert('Connected with Dr. Babalola!')">Connected (Slot 1)</button>
+          </div>
+          <div class="card">
+            <h3>Prof. Aliyu Usman</h3>
+            <p style="color: var(--accent-blue); margin: 0.5rem 0;">Neuroscience & Biology Specialist</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Specialized in advanced brain anatomy and medical entrance preparation.</p>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="alert('Connected with Prof. Aliyu!')">Connected (Slot 2)</button>
+          </div>
+          <div class="card" style="border-color: var(--accent-gold);">
+            <h3>CREED AI Expert Agent</h3>
+            <p style="color: var(--accent-gold); margin: 0.5rem 0;">24/7 Virtual Tutor</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Instant AI assistance across all subjects and exam boards.</p>
+            <button class="btn btn-outline" style="width: 100%; justify-content: center; border-color: var(--accent-gold); color: var(--accent-gold);" onclick="switchTab('ai', document.getElementById('nav-ai'))">Chat with AI Agent</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Scientific Calculator -->
+      <div id="calculator" class="dash-section">
+        <div class="section-title" style="margin-bottom: 1.5rem; text-align:left;">
+          <h2>Scientific Calculator</h2>
+          <p>Advanced computation for physics, chemistry, and STEM examinations</p>
+        </div>
+        <div class="calc-box">
+          <input type="text" class="calc-screen" id="calcScreen" readonly value="0">
+          <div class="calc-keys">
+            <button class="calc-btn" onclick="clearCalc()">C</button>
+            <button class="calc-btn" onclick="appendCalc('Math.sin(')">sin</button>
+            <button class="calc-btn" onclick="appendCalc('Math.cos(')">cos</button>
+            <button class="calc-btn" onclick="appendCalc('/')">/</button>
+            <button class="calc-btn" onclick="appendCalc('7')">7</button>
+            <button class="calc-btn" onclick="appendCalc('8')">8</button>
+            <button class="calc-btn" onclick="appendCalc('9')">9</button>
+            <button class="calc-btn" onclick="appendCalc('*')">*</button>
+            <button class="calc-btn" onclick="appendCalc('4')">4</button>
+            <button class="calc-btn" onclick="appendCalc('5')">5</button>
+            <button class="calc-btn" onclick="appendCalc('6')">6</button>
+            <button class="calc-btn" onclick="appendCalc('-')">-</button>
+            <button class="calc-btn" onclick="appendCalc('1')">1</button>
+            <button class="calc-btn" onclick="appendCalc('2')">2</button>
+            <button class="calc-btn" onclick="appendCalc('3')">3</button>
+            <button class="calc-btn" onclick="appendCalc('+')">+</button>
+            <button class="calc-btn" onclick="appendCalc('0')">0</button>
+            <button class="calc-btn" onclick="appendCalc(')')">)</button>
+            <button class="calc-btn" onclick="calculateResult()" style="grid-column: span 2; background: var(--accent-cyan); color: #070b19;">=</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Pomodoro Timer -->
+      <div id="pomodoro" class="dash-section">
+        <div class="section-title" style="margin-bottom: 1.5rem; text-align:left;">
+          <h2>⏱ Pomodoro Study Timer & Statistics</h2>
+          <p>Boost your focus with structured 25-minute study intervals and progress tracking</p>
+        </div>
+        <div class="timer-box">
+          <div class="timer-display" id="timerDisplay">25:00</div>
+          <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.5rem;">
+            <button class="btn btn-primary" onclick="startTimer()">Start Focus</button>
+            <button class="btn btn-outline" onclick="pauseTimer()">Pause</button>
+            <button class="btn btn-outline" onclick="resetTimer()">Reset</button>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">Study Statistics: 4 Sessions Completed Today (100 mins focused)</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Authentication Check
+    if (localStorage.getItem('creed_auth') !== 'true') {
+      alert("Please login or sign up first to access the user dashboard.");
+      window.location.href = "login.html";
+    } else {
+      document.getElementById('userEmailDisplay').innerText = (localStorage.getItem('creed_user_email') || 'User') + ' (' + (localStorage.getItem('creed_user_role') || 'student').toUpperCase() + ')';
+    }
+
+    function logout() {
+      localStorage.removeItem('creed_auth');
+      window.location.href = "index.html";
+    }
+
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.dash-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+      if (el) el.classList.add('active');
+      if (tabId === 'quizzes') startQuestionTimer();
+      else stopQuestionTimer();
+    }
+
+    function switchStream(streamId, btn) {
+      document.querySelectorAll('.syllabus-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('stream-' + streamId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // ==========================================
+    // 120-QUESTION TIMED CBT QUIZ ENGINE
+    // ==========================================
+    const ALL_QUESTIONS = [{"exam": "JAMB", "subject": "Use of English", "q": "Choose the option nearest in meaning to the italicized word: The principal's speech was *concise* and impactful.", "opts": ["Verbose", "Brief and clear", "Ambiguous", "Tedious"], "ans": 1, "exp": "'Concise' means giving a lot of information clearly and in a few words."}, {"exam": "JAMB", "subject": "Use of English", "q": "Select the option that best completes the gap: Neither the teacher nor the students ____ present at the assembly.", "opts": ["was", "were", "is", "has been"], "ans": 1, "exp": "With 'neither...nor', the verb agrees with the nearer subject ('students' - plural), so 'were' is correct."}, {"exam": "JAMB", "subject": "Use of English", "q": "Choose the option opposite in meaning to *benevolent*:", "opts": ["Kind", "Malevolent", "Generous", "Altruistic"], "ans": 1, "exp": "'Malevolent' (wishing evil to others) is the direct antonym of 'benevolent'."}, {"exam": "JAMB", "subject": "Mathematics", "q": "Solve for x: 2x^2 - 7x + 3 = 0", "opts": ["x = 3 or 1/2", "x = -3 or -1/2", "x = 2 or 3", "x = 1 or 3"], "ans": 0, "exp": "Factoring gives (2x - 1)(x - 3) = 0, hence x = 1/2 or x = 3."}, {"exam": "JAMB", "subject": "Mathematics", "q": "If log10(x) = 2.5, find x.", "opts": ["316.23", "250", "100", "31.62"], "ans": 0, "exp": "x = 10^2.5 = 10^2 * 10^0.5 = 100 * 3.1623 = 316.23."}, {"exam": "JAMB", "subject": "Physics", "q": "A body of mass 5 kg accelerates at 4 m/s^2. Calculate the net force acting on it.", "opts": ["20 N", "9 N", "1.25 N", "40 N"], "ans": 0, "exp": "By Newton's Second Law, F = ma = 5 kg * 4 m/s^2 = 20 N."}, {"exam": "JAMB", "subject": "Physics", "q": "Which of the following electromagnetic waves has the shortest wavelength?", "opts": ["Radio waves", "Infrared", "X-rays", "Gamma rays"], "ans": 3, "exp": "Gamma rays have the highest frequency and shortest wavelength in the electromagnetic spectrum."}, {"exam": "JAMB", "subject": "Chemistry", "q": "What is the oxidation number of manganese in KMnO4?", "opts": ["+2", "+4", "+7", "+6"], "ans": 2, "exp": "+1 + Mn + 4(-2) = 0 => Mn - 7 = 0 => Mn = +7."}, {"exam": "JAMB", "subject": "Chemistry", "q": "Which gas is evolved when dilute HCl reacts with calcium trioxocarbonate(IV)?", "opts": ["Hydrogen", "Oxygen", "Carbon(IV) oxide", "Chlorine"], "ans": 2, "exp": "CaCO3 + 2HCl -> CaCl2 + H2O + CO2."}, {"exam": "JAMB", "subject": "Biology", "q": "Which organelle is responsible for cellular respiration and ATP production?", "opts": ["Ribosome", "Mitochondrion", "Golgi apparatus", "Lysosome"], "ans": 1, "exp": "Mitochondria are the powerhouses of the cell where aerobic respiration occurs."}, {"exam": "JAMB", "subject": "Biology", "q": "In which part of the human nephron does ultrafiltration occur?", "opts": ["Loop of Henle", "Bowman's capsule / Glomerulus", "Collecting duct", "Distal convoluted tubule"], "ans": 1, "exp": "High blood pressure in the glomerulus forces small molecules into Bowman's capsule."}, {"exam": "JAMB", "subject": "Economics", "q": "When the price elasticity of demand is greater than 1, demand is said to be:", "opts": ["Inelastic", "Unitary elastic", "Elastic", "Perfectly inelastic"], "ans": 2, "exp": "PED > 1 means percentage change in quantity demanded exceeds percentage change in price (elastic)."}, {"exam": "JAMB", "subject": "Government", "q": "Which constitutional system concentrates all political power in a single central government?", "opts": ["Federalism", "Confederalism", "Unitary system", "Parliamentary system"], "ans": 2, "exp": "A unitary state is governed as a single entity where the central government is supreme."}, {"exam": "JAMB", "subject": "Literature", "q": "A fourteen-line poem written in iambic pentameter is called a:", "opts": ["Ballad", "Sonnet", "Ode", "Elegy"], "ans": 1, "exp": "Sonnets consist of 14 lines typically following strict rhyme schemes."}, {"exam": "JAMB", "subject": "Physics", "q": "Calculate the escape velocity from Earth's surface (g = 10 m/s^2, R = 6.4 x 10^6 m).", "opts": ["11.3 km/s", "7.9 km/s", "9.8 km/s", "15.0 km/s"], "ans": 0, "exp": "v = sqrt(2gR) = sqrt(2 * 10 * 6.4e6) \u2248 11,313 m/s = 11.3 km/s."}, {"exam": "JAMB", "subject": "Chemistry", "q": "Which of the following is an unsaturated hydrocarbon?", "opts": ["Ethane", "Propane", "Ethene", "Butane"], "ans": 2, "exp": "Ethene (C2H4) contains a carbon-carbon double bond."}, {"exam": "JAMB", "subject": "Mathematics", "q": "Find the derivative of y = 3x^4 - 5x^2 + 7.", "opts": ["12x^3 - 10x", "12x^3 - 5x", "3x^3 - 10x", "12x^4 - 10x"], "ans": 0, "exp": "dy/dx = 4*3x^3 - 2*5x = 12x^3 - 10x."}, {"exam": "JAMB", "subject": "Biology", "q": "Which blood group is known as the universal donor?", "opts": ["AB+", "O-", "A+", "B-"], "ans": 1, "exp": "Type O- red blood cells lack A, B, and Rh antigens, preventing immune reactions."}, {"exam": "JAMB", "subject": "Economics", "q": "Opportunity cost is defined as:", "opts": ["Total money spent", "The next best alternative forgone", "Fixed cost of production", "Marginal revenue"], "ans": 1, "exp": "Opportunity cost is the value of the best alternative given up when making a choice."}, {"exam": "JAMB", "subject": "Use of English", "q": "Identify the figure of speech: 'The wind whispered secrets through the trees.'", "opts": ["Simile", "Metaphor", "Personification", "Hyperbole"], "ans": 2, "exp": "Giving human traits ('whispered secrets') to wind is personification."}, {"exam": "WAEC", "subject": "Physics", "q": "State the SI unit of electrical resistance.", "opts": ["Volt", "Ampere", "Ohm", "Watt"], "ans": 2, "exp": "Electrical resistance is measured in Ohms (\u03a9)."}, {"exam": "WAEC", "subject": "Physics", "q": "A transformer steps down 240 V to 12 V. If the primary coil has 1000 turns, how many turns are in the secondary coil?", "opts": ["50 turns", "200 turns", "20 turns", "500 turns"], "ans": 0, "exp": "Ns/Np = Vs/Vp => Ns = (12/240) * 1000 = 50 turns."}, {"exam": "WAEC", "subject": "Chemistry", "q": "What is the IUPAC name for CH3CH2COOH?", "opts": ["Ethanoic acid", "Propanoic acid", "Butanoic acid", "Methanoic acid"], "ans": 1, "exp": "Three carbon atoms with a carboxylic acid group (-COOH) is propanoic acid."}, {"exam": "WAEC", "subject": "Chemistry", "q": "Which separation technique is best for obtaining pure water from seawater?", "opts": ["Filtration", "Simple distillation", "Chromatography", "Decantation"], "ans": 1, "exp": "Simple distillation separates water (lower boiling point) from dissolved salts."}, {"exam": "WAEC", "subject": "Biology", "q": "Which vitamin deficiency causes scurvy?", "opts": ["Vitamin A", "Vitamin B1", "Vitamin C", "Vitamin D"], "ans": 2, "exp": "Vitamin C (ascorbic acid) deficiency leads to scurvy."}, {"exam": "WAEC", "subject": "Biology", "q": "Photosynthesis occurs primarily in which plant tissue?", "opts": ["Xylem", "Palisade mesophyll", "Phloem", "Root cortex"], "ans": 1, "exp": "Palisade mesophyll cells contain abundant chloroplasts for light absorption."}, {"exam": "WAEC", "subject": "Mathematics", "q": "Calculate the area of a circle of radius 7 cm (Take \u03c0 = 22/7).", "opts": ["154 cm^2", "44 cm^2", "308 cm^2", "49 cm^2"], "ans": 0, "exp": "Area = \u03c0r^2 = (22/7) * 7 * 7 = 154 cm^2."}, {"exam": "WAEC", "subject": "Mathematics", "q": "Find the median of the numbers: 4, 8, 2, 10, 6.", "opts": ["2", "6", "8", "10"], "ans": 1, "exp": "Ordered: 2, 4, 6, 8, 10. The middle value is 6."}, {"exam": "WAEC", "subject": "English Language", "q": "Choose the word that has the same vowel sound as 'seat':", "opts": ["Sit", "Set", "Key", "Say"], "ans": 2, "exp": "Both 'seat' and 'key' contain the long /i:/ vowel sound."}, {"exam": "WAEC", "subject": "Economics", "q": "Which of the following is a function of a central bank?", "opts": ["Accepting deposits from individuals", "Issuing legal tender currency", "Granting personal car loans", "Operating retail branches"], "ans": 1, "exp": "The Central Bank has the sole authority to issue currency notes and coins."}, {"exam": "WAEC", "subject": "Government", "q": "The rule of law was popularized by which legal scholar?", "opts": ["A.V. Dicey", "Baron de Montesquieu", "John Locke", "Thomas Hobbes"], "ans": 0, "exp": "A.V. Dicey formulated the classic principles of the Rule of Law in 1885."}, {"exam": "WAEC", "subject": "Agricultural Science", "q": "Which soil type has the highest water-holding capacity?", "opts": ["Sandy soil", "Clay soil", "Loamy soil", "Gravel"], "ans": 1, "exp": "Clay particles are extremely fine with tiny pore spaces that retain water."}, {"exam": "WAEC", "subject": "Physics", "q": "The pressure at a depth of 10 m in water (density = 1000 kg/m^3, g = 10 m/s^2) is:", "opts": ["10^4 Pa", "10^5 Pa", "10^3 Pa", "10^6 Pa"], "ans": 1, "exp": "P = \u03c1gh = 1000 * 10 * 10 = 100,000 Pa = 10^5 Pa."}, {"exam": "WAEC", "subject": "Chemistry", "q": "An element X has atomic number 17. To which group in the periodic table does it belong?", "opts": ["Group I", "Group II", "Group VII (Halogens)", "Group 0"], "ans": 2, "exp": "Electronic configuration 2, 8, 7 indicates 7 valence electrons (Group VII)."}, {"exam": "WAEC", "subject": "Biology", "q": "Which enzyme in saliva begins the digestion of starch?", "opts": ["Pepsin", "Ptyalin (Salivary amylase)", "Lipase", "Trypsin"], "ans": 1, "exp": "Salivary amylase hydrolyzes starch into maltose in the mouth."}, {"exam": "WAEC", "subject": "Mathematics", "q": "If sin \u03b8 = 3/5 for an acute angle \u03b8, find cos \u03b8.", "opts": ["4/5", "3/4", "5/4", "5/3"], "ans": 0, "exp": "By Pythagoras (3-4-5 triangle), adjacent = 4, so cos \u03b8 = 4/5."}, {"exam": "WAEC", "subject": "Commerce", "q": "A document issued by a seller to a buyer showing details of goods supplied and amount due is:", "opts": ["Receipt", "Invoice", "Quotation", "Debit note"], "ans": 1, "exp": "An invoice itemizes goods sold and the payment owed."}, {"exam": "WAEC", "subject": "Geography", "q": "Lines joining places of equal atmospheric pressure on a weather map are called:", "opts": ["Isotherms", "Isobars", "Isohyets", "Contours"], "ans": 1, "exp": "Isobars connect points of equal barometric pressure."}, {"exam": "WAEC", "subject": "Civic Education", "q": "Universal Declaration of Human Rights (UDHR) was adopted by the UN in what year?", "opts": ["1945", "1948", "1960", "1963"], "ans": 1, "exp": "The UN General Assembly adopted the UDHR on December 10, 1948."}, {"exam": "WAEC", "subject": "Physics", "q": "Which instrument is used to measure relative humidity?", "opts": ["Barometer", "Hygrometer", "Hydrometer", "Anemometer"], "ans": 1, "exp": "A hygrometer measures the water vapor content/humidity of air."}, {"exam": "NECO", "subject": "Biology", "q": "The scientific study of heredity and variation in living organisms is:", "opts": ["Ecology", "Genetics", "Taxonomy", "Cytology"], "ans": 1, "exp": "Genetics studies genes, heredity, and genetic variation."}, {"exam": "NECO", "subject": "Chemistry", "q": "What is the pH of a neutral aqueous solution at 25\u00b0C?", "opts": ["0", "7", "14", "1"], "ans": 1, "exp": "Pure water has [H+] = 10^-7 M, giving pH = 7."}, {"exam": "NECO", "subject": "Physics", "q": "Which of the following is a vector quantity?", "opts": ["Speed", "Mass", "Displacement", "Temperature"], "ans": 2, "exp": "Displacement has both magnitude and direction."}, {"exam": "NECO", "subject": "Mathematics", "q": "Evaluate 5! / 3!", "opts": ["20", "15", "60", "2"], "ans": 0, "exp": "5! / 3! = (5 * 4 * 3!) / 3! = 20."}, {"exam": "NECO", "subject": "English", "q": "Identify the tense: 'She had finished her homework before dinner.'", "opts": ["Simple Past", "Past Perfect", "Present Perfect", "Past Continuous"], "ans": 1, "exp": "'Had + past participle' forms the past perfect tense."}, {"exam": "NECO", "subject": "Economics", "q": "Inflation caused by rising production costs is known as:", "opts": ["Demand-pull inflation", "Cost-push inflation", "Creeping inflation", "Hyperinflation"], "ans": 1, "exp": "Cost-push inflation occurs when higher wages or raw material costs raise prices."}, {"exam": "NECO", "subject": "Government", "q": "Separation of powers is primarily associated with which political philosopher?", "opts": ["Montesquieu", "Karl Marx", "Machiavelli", "Rousseau"], "ans": 0, "exp": "Montesquieu advocated dividing power among executive, legislative, and judicial branches."}, {"exam": "NECO", "subject": "Physics", "q": "The boiling point of water increases when:", "opts": ["External pressure increases", "Altitude increases", "External pressure decreases", "Volume increases"], "ans": 0, "exp": "Higher external pressure requires higher vapor pressure (temperature) for boiling."}, {"exam": "NECO", "subject": "Chemistry", "q": "Which metal is extracted from bauxite ore?", "opts": ["Iron", "Copper", "Aluminium", "Zinc"], "ans": 2, "exp": "Bauxite (Al2O3\u00b72H2O) is the principal ore of aluminium."}, {"exam": "NECO", "subject": "Biology", "q": "During mitosis, chromosomes align at the cell's equator during:", "opts": ["Prophase", "Metaphase", "Anaphase", "Telophase"], "ans": 1, "exp": "Metaphase is characterized by chromosomal alignment along the metaphase plate."}, {"exam": "NECO", "subject": "Mathematics", "q": "Find the sum of interior angles of a regular hexagon.", "opts": ["540\u00b0", "720\u00b0", "360\u00b0", "900\u00b0"], "ans": 1, "exp": "(n - 2) * 180\u00b0 = (6 - 2) * 180\u00b0 = 720\u00b0."}, {"exam": "NECO", "subject": "Agricultural Science", "q": "Leguminous crops enrich the soil with nitrogen through bacteria in their:", "opts": ["Leaves", "Root nodules", "Stems", "Flowers"], "ans": 1, "exp": "Rhizobium bacteria live symbiotically in root nodules of legumes."}, {"exam": "NECO", "subject": "Commerce", "q": "The reward for entrepreneurship as a factor of production is:", "opts": ["Rent", "Wages", "Interest", "Profit"], "ans": 3, "exp": "Entrepreneurs earn profit for bearing business risk and organizing production."}, {"exam": "NECO", "subject": "Geography", "q": "Which layer of the atmosphere contains the ozone layer?", "opts": ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere"], "ans": 1, "exp": "The ozone layer is concentrated in the lower stratosphere."}, {"exam": "NECO", "subject": "Physics", "q": "Heat transfer in a vacuum occurs solely by:", "opts": ["Conduction", "Convection", "Radiation", "Evaporation"], "ans": 2, "exp": "Electromagnetic radiation requires no material medium."}, {"exam": "NECO", "subject": "Chemistry", "q": "Isotopes of an element have the same number of protons but different numbers of:", "opts": ["Electrons", "Neutrons", "Shells", "Valence electrons"], "ans": 1, "exp": "Isotopes differ in neutron count and atomic mass."}, {"exam": "NECO", "subject": "Biology", "q": "Which blood vessel carries oxygenated blood from the lungs to the heart?", "opts": ["Pulmonary artery", "Pulmonary vein", "Aorta", "Vena cava"], "ans": 1, "exp": "Pulmonary veins return oxygen-rich blood to the left atrium."}, {"exam": "NECO", "subject": "Mathematics", "q": "A fair die is tossed once. What is the probability of obtaining a prime number?", "opts": ["1/2", "1/3", "2/3", "1/6"], "ans": 0, "exp": "Prime numbers on a die are 2, 3, 5 (3 outcomes out of 6) => 3/6 = 1/2."}, {"exam": "NECO", "subject": "English", "q": "Which word is correctly spelled?", "opts": ["Accomodate", "Accommodate", "Acommodate", "Accommodatte"], "ans": 1, "exp": "'Accommodate' has double 'c' and double 'm'."}, {"exam": "NECO", "subject": "Civic Education", "q": "A citizen's legal right to vote in public elections is called:", "opts": ["Franchise", "Sovereignty", "Ombudsman", "Impeachment"], "ans": 0, "exp": "Franchise (suffrage) is the constitutional right to vote."}, {"exam": "GCE", "subject": "Further Mathematics", "q": "Evaluate the definite integral \u222b from 0 to 2 of (3x^2) dx.", "opts": ["8", "6", "12", "4"], "ans": 0, "exp": "[x^3] from 0 to 2 = 2^3 - 0^3 = 8."}, {"exam": "GCE", "subject": "Physics", "q": "What is the work function of a metal if threshold frequency is 5 x 10^14 Hz (h = 6.63 x 10^-34 J\u00b7s)?", "opts": ["3.315 x 10^-19 J", "1.326 x 10^-48 J", "6.63 x 10^-20 J", "5.0 x 10^-19 J"], "ans": 0, "exp": "\u03a6 = hf0 = 6.63e-34 * 5e14 = 3.315e-19 J."}, {"exam": "GCE", "subject": "Chemistry", "q": "According to Le Chatelier's principle, increasing pressure on N2(g) + 3H2(g) \u21cc 2NH3(g) shifts equilibrium to:", "opts": ["The left (reactants)", "The right (products)", "No shift", "Stops reaction"], "ans": 1, "exp": "4 moles of gas on left vs 2 moles on right; higher pressure favors fewer gas moles (right)."}, {"exam": "GCE", "subject": "Biology", "q": "Which phase of the cardiac cycle represents ventricular contraction?", "opts": ["Diastole", "Systole", "Repolarization", "Refractory period"], "ans": 1, "exp": "Systole is the contraction phase pumping blood out of heart chambers."}, {"exam": "GCE", "subject": "Mathematics", "q": "Determine the determinant of matrix [[4, 2], [3, 5]].", "opts": ["14", "26", "20", "6"], "ans": 0, "exp": "det = (4*5) - (2*3) = 20 - 6 = 14."}, {"exam": "GCE", "subject": "Economics", "q": "In perfect competition, a firm maximizes profit where:", "opts": ["MR = MC", "AR = AC", "TR = TC", "P > MC"], "ans": 0, "exp": "Marginal Revenue equals Marginal Cost (MR = MC) is the universal profit-maximization rule."}, {"exam": "GCE", "subject": "Physics", "q": "Two capacitors of 4 \u00b5F and 6 \u00b5F are connected in parallel. Their equivalent capacitance is:", "opts": ["10 \u00b5F", "2.4 \u00b5F", "24 \u00b5F", "1.5 \u00b5F"], "ans": 0, "exp": "In parallel, C_eq = C1 + C2 = 4 + 6 = 10 \u00b5F."}, {"exam": "GCE", "subject": "Chemistry", "q": "Which hybridization is present in the carbon atoms of ethyne (C2H2)?", "opts": ["sp3", "sp2", "sp", "dsp2"], "ans": 2, "exp": "Triple-bonded carbons in alkynes exhibit linear sp hybridization."}, {"exam": "GCE", "subject": "Biology", "q": "The enzyme responsible for unwinding the DNA double helix during replication is:", "opts": ["DNA polymerase", "Helicase", "Ligase", "Primase"], "ans": 1, "exp": "DNA helicase breaks hydrogen bonds between base pairs to separate strands."}, {"exam": "GCE", "subject": "Literature", "q": "Dramatic irony occurs when:", "opts": ["The audience knows a crucial fact unknown to the characters", "A character speaks alone on stage", "Two characters argue", "A story ends happily"], "ans": 0, "exp": "Dramatic irony creates tension because spectators possess knowledge characters lack."}, {"exam": "GCE", "subject": "Further Mathematics", "q": "Find the modulus of the complex number z = 3 - 4i.", "opts": ["5", "7", "1", "25"], "ans": 0, "exp": "|z| = sqrt(3^2 + (-4)^2) = sqrt(9 + 16) = 5."}, {"exam": "GCE", "subject": "Physics", "q": "Half-life of a radioactive isotope is 10 days. What fraction remains after 30 days?", "opts": ["1/8", "1/4", "1/3", "1/16"], "ans": 0, "exp": "30 days = 3 half-lives => (1/2)^3 = 1/8."}, {"exam": "GCE", "subject": "Chemistry", "q": "Which indicator is suitable for titrating a weak acid against a strong base?", "opts": ["Methyl orange", "Phenolphthalein", "Litmus", "Bromothymol blue"], "ans": 1, "exp": "Phenolphthalein changes color in the basic pH range (8.2\u201310.0), matching the equivalence point."}, {"exam": "GCE", "subject": "Biology", "q": "Which hormone regulates blood glucose by promoting glycogen synthesis in the liver?", "opts": ["Glucagon", "Insulin", "Adrenaline", "Thyroxine"], "ans": 1, "exp": "Insulin lowers blood glucose by stimulating cellular uptake and glycogenesis."}, {"exam": "GCE", "subject": "Geography", "q": "Which rock type is formed from the cooling and solidification of molten magma?", "opts": ["Sedimentary", "Igneous", "Metamorphic", "Fossiliferous"], "ans": 1, "exp": "Igneous rocks crystallize directly from magma or lava."}, {"exam": "GCE", "subject": "Government", "q": "A bicameral legislature consists of:", "opts": ["One legislative chamber", "Two legislative chambers", "Three branches", "Military council"], "ans": 1, "exp": "Bicameralism divides legislators into two separate assemblies (e.g., Senate and House)."}, {"exam": "GCE", "subject": "Mathematics", "q": "Find the 10th term of the arithmetic progression: 3, 7, 11, 15, ...", "opts": ["39", "43", "35", "40"], "ans": 0, "exp": "Tn = a + (n-1)d = 3 + 9(4) = 39."}, {"exam": "GCE", "subject": "Physics", "q": "Sound waves in air are classified as:", "opts": ["Transverse waves", "Longitudinal waves", "Electromagnetic waves", "Polarized waves"], "ans": 1, "exp": "Air particles oscillate parallel to the direction of sound propagation."}, {"exam": "GCE", "subject": "Chemistry", "q": "Faraday's first law of electrolysis states that mass deposited is proportional to:", "opts": ["Voltage", "Quantity of electricity (charge)", "Resistance", "Temperature"], "ans": 1, "exp": "m = ZIt = ZQ."}, {"exam": "GCE", "subject": "English", "q": "Choose the correct preposition: He was acquitted ____ all charges.", "opts": ["from", "of", "with", "on"], "ans": 1, "exp": "Standard English usage is 'acquitted of' charges."}, {"exam": "IELTS", "subject": "Academic Vocabulary", "q": "In academic writing, which word best replaces 'a lot of' in: 'There is a lot of evidence supporting neuroplasticity'?", "opts": ["Substantial", "Big", "Huge", "Tons of"], "ans": 0, "exp": "'Substantial' is formal and precise for IELTS Academic Writing Task 2."}, {"exam": "IELTS", "subject": "Grammar & Cohesion", "q": "Select the most appropriate cohesive device: '____ renewable energy costs have fallen, fossil fuels still dominate global supply.'", "opts": ["Although", "Therefore", "Furthermore", "Consequently"], "ans": 0, "exp": "'Although' introduces a concessive contrast between the two clauses."}, {"exam": "IELTS", "subject": "Reading Comprehension", "q": "If a passage states 'The study found no conclusive link between caffeine intake and insomnia in moderate consumers', the statement 'Moderate caffeine always causes insomnia' is:", "opts": ["TRUE", "FALSE", "NOT GIVEN", "PARTIALLY TRUE"], "ans": 1, "exp": "The passage explicitly contradicts the statement ('no conclusive link'), making it FALSE."}, {"exam": "IELTS", "subject": "Academic Vocabulary", "q": "What is the meaning of *mitigate* in environmental contexts?", "opts": ["Worsen", "Lessen the severity of", "Ignore completely", "Accelerate"], "ans": 1, "exp": "'Mitigate' means to make less severe, serious, or painful."}, {"exam": "IELTS", "subject": "Grammar & Cohesion", "q": "Choose the grammatically accurate sentence:", "opts": ["The number of students enrolling have increased.", "The number of students enrolling has increased.", "A number of student has enrolled.", "The numbers of student is increasing."], "ans": 1, "exp": "'The number of...' takes a singular verb ('has increased')."}, {"exam": "IELTS", "subject": "Academic Vocabulary", "q": "Which verb describes a sharp upward trend on a line graph?", "opts": ["Plummeted", "Surged", "Fluctuated", "Plateaued"], "ans": 1, "exp": "'Surged' indicates a rapid, strong upward movement."}, {"exam": "IELTS", "subject": "Reading Comprehension", "q": "Which synonym for *ubiquitous* fits best: 'Smartphones have become ubiquitous in modern classrooms'?", "opts": ["Rare", "Found everywhere", "Expensive", "Prohibited"], "ans": 1, "exp": "'Ubiquitous' means present, appearing, or found everywhere."}, {"exam": "IELTS", "subject": "Grammar & Cohesion", "q": "Complete the conditional: 'Had the government invested earlier, the infrastructure ____ modernized by now.'", "opts": ["would have been", "will be", "would be", "had been"], "ans": 0, "exp": "Inverted third conditional ('Had + subject + past participle') pairs with 'would have been'."}, {"exam": "IELTS", "subject": "Academic Vocabulary", "q": "Choose the best collocation: 'Researchers ____ a comprehensive survey across 12 universities.'", "opts": ["made", "conducted", "did", "built"], "ans": 1, "exp": "'Conduct a survey/study' is standard academic collocation."}, {"exam": "IELTS", "subject": "Reading Comprehension", "q": "When a statement introduces information neither confirmed nor denied by the text, the IELTS answer is:", "opts": ["FALSE", "NOT GIVEN", "TRUE", "INFERRED"], "ans": 1, "exp": "NOT GIVEN applies when the passage lacks sufficient information to verify or refute the claim."}, {"exam": "IELTS", "subject": "Academic Vocabulary", "q": "What does *detrimental* mean?", "opts": ["Beneficial", "Harmful", "Neutral", "Mandatory"], "ans": 1, "exp": "'Detrimental' means tending to cause harm."}, {"exam": "IELTS", "subject": "Grammar & Cohesion", "q": "Select the correct relative pronoun: 'The neuroscientist, ____ research won the prize, spoke at the conference.'", "opts": ["who", "whose", "whom", "which"], "ans": 1, "exp": "'Whose' shows possession ('the neuroscientist's research')."}, {"exam": "IELTS", "subject": "Academic Vocabulary", "q": "Which phrase best introduces an opposing viewpoint in an essay?", "opts": ["On the other hand,", "In addition,", "For instance,", "As a result,"], "ans": 0, "exp": "'On the other hand' signals contrast with the preceding argument."}, {"exam": "IELTS", "subject": "Academic Vocabulary", "q": "A period where data values remain stable without rising or falling is called a:", "opts": ["Peak", "Trough", "Plateau", "Spike"], "ans": 2, "exp": "A plateau represents a state of little or no change following a period of activity."}, {"exam": "IELTS", "subject": "Grammar & Cohesion", "q": "Identify the error-free passive construction:", "opts": ["The samples were analyzed in the laboratory.", "The samples was analyzed in the laboratory.", "The samples analyzed in the laboratory.", "The samples were analyze in the laboratory."], "ans": 0, "exp": "Plural subject 'samples' requires 'were analyzed'."}, {"exam": "IELTS", "subject": "Academic Vocabulary", "q": "What does *proliferation* mean in 'the proliferation of digital learning platforms'?", "opts": ["Rapid increase in numbers", "Sudden disappearance", "Strict regulation", "Financial collapse"], "ans": 0, "exp": "'Proliferation' means rapid multiplication or spread."}, {"exam": "IELTS", "subject": "Reading Comprehension", "q": "Skimming a reading passage primarily helps you identify:", "opts": ["Every single date", "The main idea and structure", "Exact spelling of names", "Footnotes only"], "ans": 1, "exp": "Skimming is reading quickly to grasp the overarching theme and paragraph organization."}, {"exam": "IELTS", "subject": "Academic Vocabulary", "q": "Choose the formal equivalent of 'find out':", "opts": ["Ascertain", "Guess", "Look up", "Chat"], "ans": 0, "exp": "'Ascertain' means to find something out for certain in formal writing."}, {"exam": "IELTS", "subject": "Grammar & Cohesion", "q": "Which sentence uses punctuation properly?", "opts": ["However, the results were inconclusive.", "However the results, were inconclusive.", "However; the results were inconclusive.", "However: the results were inconclusive."], "ans": 0, "exp": "Conjunctive adverbs like 'However' at the start of a sentence are followed by a comma."}, {"exam": "IELTS", "subject": "Academic Vocabulary", "q": "What is the antonym of *scarce*?", "opts": ["Abundant", "Meager", "Deficient", "Rare"], "ans": 0, "exp": "'Abundant' means existing in large quantities, opposite of scarce."}, {"exam": "SAT", "subject": "SAT Math", "q": "If 3x + 5 = 20, what is the value of 6x + 2?", "opts": ["32", "30", "17", "22"], "ans": 0, "exp": "3x = 15 => x = 5. Then 6(5) + 2 = 32."}, {"exam": "SAT", "subject": "SAT Math", "q": "A line in the xy-plane passes through (0, 4) and has a slope of -2. What is its equation?", "opts": ["y = -2x + 4", "y = 4x - 2", "y = 2x + 4", "y = -2x - 4"], "ans": 0, "exp": "Using slope-intercept form y = mx + b with m = -2 and b = 4 gives y = -2x + 4."}, {"exam": "SAT", "subject": "SAT Reading & Writing", "q": "Which choice completes the text with the most logical word? 'Because the fossil record is incomplete, paleontologists must often ____ evolutionary relationships from fragmentary evidence.'", "opts": ["infer", "fabricate", "dismiss", "obstruct"], "ans": 0, "exp": "'Infer' means to deduce or conclude from evidence and reasoning."}, {"exam": "SAT", "subject": "SAT Math", "q": "If f(x) = x^2 - 3x + 4, what is f(-2)?", "opts": ["14", "2", "6", "-6"], "ans": 0, "exp": "f(-2) = (-2)^2 - 3(-2) + 4 = 4 + 6 + 4 = 14."}, {"exam": "SAT", "subject": "SAT Math", "q": "In a right triangle, one acute angle measures 35\u00b0. What is the measure of the other acute angle?", "opts": ["55\u00b0", "65\u00b0", "145\u00b0", "45\u00b0"], "ans": 0, "exp": "Acute angles in a right triangle are complementary: 90\u00b0 - 35\u00b0 = 55\u00b0."}, {"exam": "SAT", "subject": "SAT Reading & Writing", "q": "Select the grammatically correct transition: 'The experiment yielded unexpected data; ____, the researchers repeated the trials to verify accuracy.'", "opts": ["consequently", "meanwhile", "nevertheless", "conversely"], "ans": 0, "exp": "'Consequently' shows a direct cause-and-effect relationship."}, {"exam": "SAT", "subject": "SAT Math", "q": "What is 25% of 480?", "opts": ["120", "96", "140", "115"], "ans": 0, "exp": "0.25 * 480 = 120."}, {"exam": "SAT", "subject": "SAT Math", "q": "If 2^(x+1) = 32, what is x?", "opts": ["4", "5", "3", "6"], "ans": 0, "exp": "32 = 2^5, so x + 1 = 5 => x = 4."}, {"exam": "SAT", "subject": "SAT Reading & Writing", "q": "Choose the word that best fits: 'Her ____ attention to detail ensured that not a single calculation error went unnoticed.'", "opts": ["meticulous", "cursory", "haphazard", "negligent"], "ans": 0, "exp": "'Meticulous' means showing great attention to detail; very careful and precise."}, {"exam": "SAT", "subject": "SAT Math", "q": "The average (arithmetic mean) of 4 numbers is 18. If three of the numbers are 12, 16, and 20, what is the fourth number?", "opts": ["24", "22", "18", "26"], "ans": 0, "exp": "Total sum = 4 * 18 = 72. 72 - (12 + 16 + 20) = 72 - 48 = 24."}, {"exam": "SAT", "subject": "SAT Math", "q": "If a circle has circumference 16\u03c0, what is its radius?", "opts": ["8", "16", "4", "32"], "ans": 0, "exp": "C = 2\u03c0r = 16\u03c0 => r = 8."}, {"exam": "SAT", "subject": "SAT Reading & Writing", "q": "Which choice maintains parallel structure? 'The fellowship supports scholars who research climate resilience, publish open-access data, and ____.'", "opts": ["mentor young scientists", "mentoring young scientists", "to mentor young scientists", "young scientists are mentored"], "ans": 0, "exp": "Parallel present-tense verbs: 'research..., publish..., and mentor...'."}, {"exam": "SAT", "subject": "SAT Math", "q": "What is the slope of the line 4x - 2y = 10?", "opts": ["2", "-2", "4", "1/2"], "ans": 0, "exp": "Rearranging to y = 2x - 5 gives slope m = 2."}, {"exam": "SAT", "subject": "SAT Math", "q": "A store discounts a $120 jacket by 15%. What is the sale price?", "opts": ["$102", "$105", "$98", "$108"], "ans": 0, "exp": "15% of 120 = $18. $120 - $18 = $102."}, {"exam": "SAT", "subject": "SAT Reading & Writing", "q": "In context, *corroborate* most nearly means:", "opts": ["Confirm or support", "Contradict", "Complicate", "Overlook"], "ans": 0, "exp": "'Corroborate' means to confirm or give support to a theory or finding."}, {"exam": "SAT", "subject": "SAT Math", "q": "Solve the system: x + y = 10 and x - y = 4. Find x.", "opts": ["7", "3", "6", "8"], "ans": 0, "exp": "Adding equations gives 2x = 14 => x = 7."}, {"exam": "SAT", "subject": "SAT Math", "q": "Which of the following is equivalent to (x + 3)(x - 5)?", "opts": ["x^2 - 2x - 15", "x^2 + 2x - 15", "x^2 - 8x - 15", "x^2 - 2x + 15"], "ans": 0, "exp": "x^2 - 5x + 3x - 15 = x^2 - 2x - 15."}, {"exam": "SAT", "subject": "SAT Reading & Writing", "q": "Select proper punctuation: 'Dr. Mensah's team discovered a novel biomarker ____ a protein that signals early neuroinflammation.'", "opts": [":", ";", ".", "?"], "ans": 0, "exp": "A colon introduces an explanation or appositive definition."}, {"exam": "SAT", "subject": "SAT Math", "q": "If sin(x) = cos(32\u00b0) and 0\u00b0 < x < 90\u00b0, what is x?", "opts": ["58\u00b0", "32\u00b0", "68\u00b0", "48\u00b0"], "ans": 0, "exp": "sin(x) = cos(90\u00b0 - x) => x = 90\u00b0 - 32\u00b0 = 58\u00b0."}, {"exam": "SAT", "subject": "SAT Math", "q": "A sequence starts at 5 and triples each term. What is the 4th term?", "opts": ["135", "45", "15", "405"], "ans": 0, "exp": "Terms: 5, 15, 45, 135."}, {"exam": "NEUROSCIENCE", "subject": "Neurovascular Coupling", "q": "Which neurovascular cell type wraps around brain capillaries and regulates regional blood flow?", "opts": ["Pericytes", "Schwann cells", "Oligodendrocytes", "Ependymal cells"], "ans": 0, "exp": "Pericytes contract or relax around capillaries in response to neuronal signaling."}, {"exam": "NEUROSCIENCE", "subject": "Brain Anatomy", "q": "Which brain lobe is primarily responsible for executive function, decision making, and voluntary motor control?", "opts": ["Frontal lobe", "Occipital lobe", "Temporal lobe", "Parietal lobe"], "ans": 0, "exp": "The frontal lobe houses the prefrontal cortex and primary motor cortex."}, {"exam": "NEUROSCIENCE", "subject": "Brain Anatomy", "q": "The primary visual cortex is located in which cerebral lobe?", "opts": ["Occipital lobe", "Parietal lobe", "Frontal lobe", "Insular lobe"], "ans": 0, "exp": "The occipital lobe processes visual information from the retina."}, {"exam": "NEUROSCIENCE", "subject": "Neurobiology", "q": "What is the primary excitatory neurotransmitter in the human central nervous system?", "opts": ["Glutamate", "GABA", "Glycine", "Serotonin"], "ans": 0, "exp": "Glutamate mediates fast excitatory synaptic transmission across the CNS."}, {"exam": "NEUROSCIENCE", "subject": "Neurobiology", "q": "Which neurotransmitter is primarily inhibitory in the adult brain?", "opts": ["GABA", "Dopamine", "Norepinephrine", "Acetylcholine"], "ans": 0, "exp": "Gamma-aminobutyric acid (GABA) hyperpolarizes postsynaptic neurons."}, {"exam": "NEUROSCIENCE", "subject": "Brain Anatomy", "q": "Damage to Broca's area typically impairs:", "opts": ["Speech production", "Auditory comprehension", "Visual recognition", "Balance and posture"], "ans": 0, "exp": "Broca's area in the left inferior frontal gyrus coordinates motor speech."}, {"exam": "NEUROSCIENCE", "subject": "Neurovascular Coupling", "q": "The Blood-Brain Barrier (BBB) is formed primarily by tight junctions between:", "opts": ["Cerebral endothelial cells", "Purkinje neurons", "Microglia", "Meningeal fibroblasts"], "ans": 0, "exp": "Tight junctions between capillary endothelial cells restrict paracellular transport."}, {"exam": "NEUROSCIENCE", "subject": "Cognitive Neuroscience", "q": "Which medial temporal lobe structure is essential for consolidating short-term into long-term declarative memory?", "opts": ["Hippocampus", "Amygdala", "Thalamus", "Hypothalamus"], "ans": 0, "exp": "The hippocampus is critical for episodic and spatial memory consolidation."}, {"exam": "NEUROSCIENCE", "subject": "Brain Anatomy", "q": "Which structure acts as the brain's main sensory relay station to the cerebral cortex?", "opts": ["Thalamus", "Medulla oblongata", "Pons", "Pineal gland"], "ans": 0, "exp": "Nearly all sensory modalities (except olfaction) synapse in the thalamus."}, {"exam": "NEUROSCIENCE", "subject": "Neurobiology", "q": "Saltatory conduction increases action potential velocity along axons due to:", "opts": ["Myelin sheaths and Nodes of Ranvier", "Larger synaptic clefts", "Dendritic spines", "Gap junctions"], "ans": 0, "exp": "Action potentials jump between Nodes of Ranvier along myelinated axons."}, {"exam": "NEUROSCIENCE", "subject": "Brain Anatomy", "q": "Which artery supplies the medial surfaces of the frontal and parietal lobes?", "opts": ["Anterior cerebral artery", "Posterior cerebral artery", "Basilar artery", "Vertebral artery"], "ans": 0, "exp": "The anterior cerebral artery (ACA) perfuses the medial frontal/parietal cortex."}, {"exam": "NEUROSCIENCE", "subject": "Neurovascular Coupling", "q": "The Circle of Willis provides:", "opts": ["Collateral arterial blood flow at the base of the brain", "Venous drainage into the jugular vein", "Cerebrospinal fluid production", "Lymphatic clearance"], "ans": 0, "exp": "The Circle of Willis anastomoses anterior and posterior cerebral circulations."}, {"exam": "NEUROSCIENCE", "subject": "Cognitive Neuroscience", "q": "Long-term potentiation (LTP) is widely regarded as the cellular basis of:", "opts": ["Learning and memory", "Circadian rhythm", "Reflex arcs", "Pain sensation"], "ans": 0, "exp": "LTP strengthens synaptic efficacy following high-frequency stimulation."}, {"exam": "NEUROSCIENCE", "subject": "Brain Anatomy", "q": "Which part of the brainstem regulates vital autonomic functions such as heart rate and respiration?", "opts": ["Medulla oblongata", "Midbrain", "Corpus callosum", "Cingulate gyrus"], "ans": 0, "exp": "The medulla contains cardiovascular and respiratory control centers."}, {"exam": "NEUROSCIENCE", "subject": "Neurobiology", "q": "Which glial cells form the myelin sheath in the Central Nervous System (CNS)?", "opts": ["Oligodendrocytes", "Schwann cells", "Astrocytes", "Microglia"], "ans": 0, "exp": "Oligodendrocytes myelinate CNS axons; Schwann cells myelinate PNS axons."}, {"exam": "NEUROSCIENCE", "subject": "Neurobiology", "q": "Which glial cells act as the resident immune macrophages of the CNS?", "opts": ["Microglia", "Ependymal cells", "Satellite cells", "Astrocytes"], "ans": 0, "exp": "Microglia surveil the CNS parenchyma and clear cellular debris/pathogens."}, {"exam": "NEUROSCIENCE", "subject": "Brain Anatomy", "q": "The thick band of white matter fibers connecting the left and right cerebral hemispheres is the:", "opts": ["Corpus callosum", "Internal capsule", "Fornix", "Cerebral peduncle"], "ans": 0, "exp": "The corpus callosum enables interhemispheric communication."}, {"exam": "NEUROSCIENCE", "subject": "Neurovascular Coupling", "q": "Cerebrospinal fluid (CSF) is produced primarily by the:", "opts": ["Choroid plexus", "Arachnoid villi", "Dural sinuses", "Subarachnoid cisterns"], "ans": 0, "exp": "Specialized ependymal cells of the choroid plexus secrete CSF into the ventricles."}, {"exam": "NEUROSCIENCE", "subject": "Cognitive Neuroscience", "q": "Which limbic structure plays a central role in fear processing and emotional salience?", "opts": ["Amygdala", "Hippocampus", "Putamen", "Globus pallidus"], "ans": 0, "exp": "The amygdala evaluates emotional significance and coordinates fear responses."}, {"exam": "NEUROSCIENCE", "subject": "Neurobiology", "q": "During the rising phase of a neuronal action potential, which ion rushes into the cell?", "opts": ["Sodium (Na+)", "Potassium (K+)", "Chloride (Cl-)", "Magnesium (Mg2+)"], "ans": 0, "exp": "Voltage-gated Na+ channels open, causing rapid Na+ influx and depolarization."}];
+    let filteredQuestions = [...ALL_QUESTIONS];
+    let currentQIndex = 0;
+    let score = 0;
+    let answeredCount = 0;
+    let qTimeLeft = 60;
+    let qTimerInterval = null;
+    let currentAnswered = false;
+
+    function populateSubjects() {
+      const examVal = document.getElementById('examFilter').value;
+      const subjSelect = document.getElementById('subjectFilter');
+      const relevant = examVal === 'ALL' ? ALL_QUESTIONS : ALL_QUESTIONS.filter(q => q.exam === examVal);
+      const subjects = [...new Set(relevant.map(q => q.subject))];
+      subjSelect.innerHTML = '<option value="ALL">All Subjects (' + relevant.length + ' Qs)</option>';
+      subjects.forEach(s => {
+        const count = relevant.filter(q => q.subject === s).length;
+        subjSelect.innerHTML += `<option value="${s}">${s} (${count} Qs)</option>`;
+      });
+    }
+
+    function filterQuestions() {
+      populateSubjects();
+      applySubjectFilter();
+    }
+
+    function applySubjectFilter() {
+      const examVal = document.getElementById('examFilter').value;
+      const subjVal = document.getElementById('subjectFilter').value;
+      filteredQuestions = ALL_QUESTIONS.filter(q => {
+        const matchExam = (examVal === 'ALL' || q.exam === examVal);
+        const matchSubj = (subjVal === 'ALL' || q.subject === subjVal);
+        return matchExam && matchSubj;
+      });
+      currentQIndex = 0;
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      if (filteredQuestions.length === 0) return;
+      currentAnswered = false;
+      const qObj = filteredQuestions[currentQIndex];
+      document.getElementById('qBadge').innerText = `${qObj.exam} • ${qObj.subject}`;
+      document.getElementById('qCounter').innerText = `Question ${currentQIndex + 1} of ${filteredQuestions.length}`;
+      document.getElementById('cbtQuestionText').innerText = qObj.q;
+
+      const optsDiv = document.getElementById('cbtOptionsContainer');
+      optsDiv.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+      qObj.opts.forEach((optText, idx) => {
+        optsDiv.innerHTML += `
+          <label class="cbt-option" id="optLabel_${idx}">
+            <input type="radio" name="cbtRadio" value="${idx}">
+            <span><strong>${letters[idx]})</strong> ${optText}</span>
+          </label>
+        `;
+      });
+
+      const fb = document.getElementById('cbtFeedbackBox');
+      fb.style.display = 'none';
+      fb.innerHTML = '';
+      resetQuestionTimer();
+    }
+
+    function resetQuestionTimer() {
+      stopQuestionTimer();
+      qTimeLeft = parseInt(document.getElementById('timePerQSelect').value) || 60;
+      updateQTimerDisplay();
+      if (document.getElementById('quizzes').classList.contains('active')) {
+        startQuestionTimer();
+      }
+    }
+
+    function startQuestionTimer() {
+      stopQuestionTimer();
+      qTimerInterval = setInterval(() => {
+        if (qTimeLeft <= 0) {
+          stopQuestionTimer();
+          if (!currentAnswered) {
+            autoTimeUp();
+          }
+          return;
+        }
+        qTimeLeft--;
+        updateQTimerDisplay();
+      }, 1000);
+    }
+
+    function stopQuestionTimer() {
+      if (qTimerInterval) {
+        clearInterval(qTimerInterval);
+        qTimerInterval = null;
+      }
+    }
+
+    function updateQTimerDisplay() {
+      const mins = Math.floor(qTimeLeft / 60);
+      const secs = qTimeLeft % 60;
+      document.getElementById('qTimerDisplay').innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function autoTimeUp() {
+      currentAnswered = true;
+      answeredCount++;
+      const qObj = filteredQuestions[currentQIndex];
+      document.getElementById('cbtScoreDisplay').innerText = `${score} / ${answeredCount}`;
+      const fb = document.getElementById('cbtFeedbackBox');
+      fb.style.display = 'block';
+      fb.style.background = 'rgba(255, 42, 133, 0.15)';
+      fb.style.border = '1px solid var(--accent-pink)';
+      fb.style.color = '#ff85b3';
+      fb.innerHTML = `⏰ <strong>Time's Up!</strong> The correct answer is <strong>${['A','B','C','D'][qObj.ans]}) ${qObj.opts[qObj.ans]}</strong>.<br><em>Explanation:</em> ${qObj.exp}`;
+    }
+
+    function checkCbtAnswer() {
+      if (currentAnswered) return;
+      const radios = document.getElementsByName('cbtRadio');
+      let selected = -1;
+      for (let r of radios) { if (r.checked) selected = parseInt(r.value); }
+      if (selected === -1) {
+        alert("Please select an answer option first.");
+        return;
+      }
+      currentAnswered = true;
+      stopQuestionTimer();
+      answeredCount++;
+      const qObj = filteredQuestions[currentQIndex];
+      const fb = document.getElementById('cbtFeedbackBox');
+      fb.style.display = 'block';
+
+      if (selected === qObj.ans) {
+        score++;
+        fb.style.background = 'rgba(0, 242, 254, 0.15)';
+        fb.style.border = '1px solid var(--accent-cyan)';
+        fb.style.color = 'var(--accent-cyan)';
+        fb.innerHTML = `✅ <strong>Correct!</strong> ${qObj.exp}`;
+      } else {
+        fb.style.background = 'rgba(255, 42, 133, 0.15)';
+        fb.style.border = '1px solid var(--accent-pink)';
+        fb.style.color = '#ff85b3';
+        fb.innerHTML = `❌ <strong>Incorrect.</strong> Correct answer: <strong>${['A','B','C','D'][qObj.ans]}) ${qObj.opts[qObj.ans]}</strong>.<br><em>Explanation:</em> ${qObj.exp}`;
+      }
+      document.getElementById('cbtScoreDisplay').innerText = `${score} / ${answeredCount}`;
+    }
+
+    function nextQuestion() {
+      if (filteredQuestions.length === 0) return;
+      currentQIndex = (currentQIndex + 1) % filteredQuestions.length;
+      renderQuestion();
+    }
+
+    function prevQuestion() {
+      if (filteredQuestions.length === 0) return;
+      currentQIndex = (currentQIndex - 1 + filteredQuestions.length) % filteredQuestions.length;
+      renderQuestion();
+    }
+
+    // Handle URL parameters (e.g. ?tab=quizzes&exam=JAMB or ?tab=syllabus)
+    window.addEventListener('DOMContentLoaded', () => {
+      populateSubjects();
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      const examParam = params.get('exam');
+      if (examParam) {
+        const examSel = document.getElementById('examFilter');
+        if ([...examSel.options].some(o => o.value === examParam)) {
+          examSel.value = examParam;
+          filterQuestions();
+        }
+      } else {
+        renderQuestion();
+      }
+      if (tabParam && document.getElementById(tabParam)) {
+        switchTab(tabParam, document.getElementById('nav-' + tabParam));
+      }
+    });
+
+    // AI Chat
+    function sendAiMessage() {
+      const input = document.getElementById('aiInput');
+      const chatBox = document.getElementById('chatBox');
+      if(!input.value.trim()) return;
+      chatBox.innerHTML += `<div style="background: rgba(0,242,254,0.15); padding: 0.8rem; border-radius: 8px; max-width: 85%; align-self: flex-end;"><strong>You:</strong> ${input.value}</div>`;
+      const q = input.value;
+      input.value = "";
+      setTimeout(() => {
+        chatBox.innerHTML += `<div style="background: rgba(15,23,42,0.9); padding: 0.8rem; border-radius: 8px; max-width: 85%;"><strong>CREED AI:</strong> Designed by Boge Expression by Babalola Oluwafemi Emmanuel. Regarding "${q}": Practice the 120+ timed CBT questions in your dashboard and review the official Science/Arts/Commercial syllabuses for top exam performance!</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 700);
+    }
+
+    // Flashcards
+    const flashcardsData = [
+      {front: "What is Neurovascular Coupling?", back: "The physiological mechanism linking local neuronal activity to regional changes in cerebral blood flow."},
+      {front: "What is the formula for Kinetic Energy?", back: "KE = 1/2 m v^2"},
+      {front: "What is Opportunity Cost?", back: "The next best alternative forgone when making an economic choice."}
+    ];
+    let fcIndex = 0, fcShowFront = true;
+    function flipCard() {
+      fcShowFront = !fcShowFront;
+      document.getElementById('fcFront').innerText = fcShowFront ? flashcardsData[fcIndex].front : flashcardsData[fcIndex].back;
+    }
+    function nextCard() {
+      fcIndex = (fcIndex + 1) % flashcardsData.length;
+      fcShowFront = true;
+      document.getElementById('fcFront').innerText = flashcardsData[fcIndex].front;
+    }
+
+    // Scientific Calculator
+    let calcValue = "";
+    function appendCalc(val) {
+      if(calcValue === "0") calcValue = "";
+      calcValue += val;
+      document.getElementById('calcScreen').value = calcValue;
+    }
+    function clearCalc() {
+      calcValue = "0";
+      document.getElementById('calcScreen').value = calcValue;
+    }
+    function calculateResult() {
+      try {
+        calcValue = eval(calcValue).toString();
+        document.getElementById('calcScreen').value = calcValue;
+      } catch(e) {
+        document.getElementById('calcScreen').value = "Error";
+        calcValue = "0";
+      }
+    }
+
+    // Pomodoro Timer
+    let timerMinutes = 25, timerSeconds = 0, timerInterval = null;
+    function updateTimerDisplay() {
+      document.getElementById('timerDisplay').innerText = `${String(timerMinutes).padStart(2, '0')}:${String(timerSeconds).padStart(2, '0')}`;
+    }
+    function startTimer() {
+      if(timerInterval) return;
+      timerInterval = setInterval(() => {
+        if(timerSeconds === 0) {
+          if(timerMinutes === 0) {
+            clearInterval(timerInterval); timerInterval = null;
+            alert("Pomodoro study session completed!");
+            return;
+          }
+          timerMinutes--; timerSeconds = 59;
+        } else { timerSeconds--; }
+        updateTimerDisplay();
+      }, 1000);
+    }
+    function pauseTimer() { clearInterval(timerInterval); timerInterval = null; }
+    function resetTimer() { clearInterval(timerInterval); timerInterval = null; timerMinutes = 25; timerSeconds = 0; updateTimerDisplay(); }
+  </script>
+</body>
+</html>
