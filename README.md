@@ -94,3 +94,23 @@ Suggested next technical steps: a backend (Firebase or Supabase) for real accoun
 ## Credits
 
 Created by Oluwafemi. © 2026 CREED Neurovascular Framework.
+
+## Update: roles, plans and e-learning
+
+- **Roles:** sign up as a **Student** or a **Tutor** (tutors add subjects and a WhatsApp number or meeting link).
+- **Gated features:** Calculator and Pomodoro need an account; reels can be watched by anyone, but like, follow, save, share and adding reels need sign-in. A reels rail sits above the header menu on every page.
+- **Tutors page:** free students can connect with **2 tutors**; free tutors can take **2 students**. Paid plans remove the limit. List tutors for all visitors in `tutors.json` (`id`, `name`, `subj`, `bio`, `contact`).
+- **Assignments:** tutors publish and grade; connected students submit text or a file under 400 KB.
+- **Plans:** Student and Tutor, each Free / Monthly / Lifetime (`PL` in `app.js`, prices are placeholders). Plans activate in demo mode (`DEMO=true`). To charge real money, add payment links in `PAY` (e.g. `PAY['student-month']='https://...'`) and set `DEMO=false`, then verify payments on a backend.
+- **Reels content:** put real video links in `reels.json`; add a `"by"` field to enable per-creator Follow.
+- **Pages added:** FAQ and Resources (mirrors the Neurovascular Dynamic Lab resources page).
+- **Important:** all data is stored per browser, so students and tutors on different devices cannot yet see each other's assignments, submissions or connections without a backend (Firebase/Supabase).
+
+## Update: menu, profiles, AI tutors, reels
+
+- **Dropdown menu:** pages are grouped into Learn, Tutors, Tools, Community and More (tap to open on mobile). Reels now live only in the menu (Community → Reels).
+- **Profiles:** `#/profile` lets students and tutors edit their profile (photo under 150 KB). Tutors add headline, subjects, experience, rate, availability and a contact link; each tutor has a public page (`#/tutorprofile`).
+- **AI Tutors page:** CREED's built-in assistant plus links to third-party AI tutors (ChatGPT Study Mode, Claude, Gemini Guided Learning, Khanmigo, Perplexity, Wolfram|Alpha, Photomath, Quizlet). They are independent services, so check each one's terms and pricing; they do not count toward the free 2-tutor limit.
+- **Reels:** a vertical TikTok/Shorts-style viewer with For You / Following / Saved tabs, an action rail (follow, like, comment, save, share), pause on tap and auto-advance. It ships with **20 animated demo reels** (CREED study cards, not filmed video). Edit them in `RD` in `app.js`.
+- **Reel settings (⚙️):** theme (Auto, Ocean, Sunset, Forest, Midnight, Gold), autoplay, voice narration, animations, text size and reel length. Settings save per device.
+- Real video links (YouTube, TikTok, Facebook, .mp4) still work through "Add video reels" or `reels.json`.

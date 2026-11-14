@@ -1,0 +1,3 @@
+[{"id":"demo1","name":"Demo Tutor: Mathematics","subj":"JAMB / WAEC Mathematics","bio":"Sample profile showing how tutors appear. Replace with real tutors."},
+{"id":"demo2","name":"Demo Tutor: English","subj":"Use of English, IELTS","bio":"Sample profile. Add a \"contact\" field (WhatsApp number or link) to enable chat."},
+{"id":"demo3","name":"Demo Tutor: Biology","subj":"Biology, Neuroscience","bio":"Sample profile. Edit tutors.json to list real tutors for every visitor."}]
